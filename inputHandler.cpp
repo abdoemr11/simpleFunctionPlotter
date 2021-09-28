@@ -23,6 +23,7 @@ InputHandler::InputHandler()
 void InputHandler::fillValues(Operation *op)
 {
     cout << "Minimum is "<<min;
+		points.clear();
     for(int i = 0; i < size+size+1; i++)
     {
         // Give each variable a value

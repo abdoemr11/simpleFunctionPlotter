@@ -91,6 +91,7 @@ void MainWindow::plot()
   std::vector<std::pair<int,int>> points = inputHandler->getPoints(exprStr.toStdString());
 	series->clear();
 	QVector<QPointF> pointVec;
+	qDebug() << "std::vector length  "<<points.size();
   for(auto point: points)
 	{
 		QPointF qpoint(point.first, point.second);
@@ -98,22 +99,7 @@ void MainWindow::plot()
 		//series->replace(qpoint);
 		series->append(qpoint);
 	} 
-	//
-	QVector<QPointF> test = series->pointsVector();
-	//test.removeFirst();
-	qDebug() << "Before adding";
-	Q_FOREACH( QPointF p, series->pointsVector() ) {
-    qDebug() << p;
-	}
-
-	test.append(QPointF(1,1));
-	//series->replace(test);
-	series->append(QPointF(1,1));
-	qDebug() << "After adding";
-	Q_FOREACH( QPointF p, series->pointsVector() ) {
-    qDebug() << p;
-}
+	qDebug() << series->pointsVector().length();
 	xAxis->setRange(-20,20);
 	yAxis->setRange(-20,20);
-	qDebug() << "finish\n";
 }
