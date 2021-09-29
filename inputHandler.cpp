@@ -12,22 +12,24 @@ InputHandler::InputHandler()
         step = 1;
     cout << step;
     step = int(round(step));
-    values = new int[size+size+1];
+    //values = new int[size+size+1];
 
 }
 /****************************************************************
  * fillValues:
  * changed the container from int[] to vector<pair<x,y>> to make
  * it easy to convert QList<QPoint>
+ * v1.1 change 
  *****************************************************************/
 void InputHandler::fillValues(Operation *op)
 {
-    cout << "Minimum is "<<min;
+    //cout << "Minimum is "<<min;
 		points.clear();
-    for(int i = 0; i < size+size+1; i++)
+    for(int i = min; i <= max; i+=step)
     {
         // Give each variable a value
-        int x = min + (i * step);
+        //int x = min + (i * step);
+				int x = i;
         for(int j = 0; j < op->v_values.size(); j++) 
         {
             op->v_values[j] = x;
@@ -63,8 +65,18 @@ std::string InputHandler::replaceVars(const Operation *op) {
  * getPoints: v1
  * export Points to be drawn
  *****************************************************************/
-std::vector<std::pair<int,int>> InputHandler::getPoints(std::string expr)
+std::vector<std::pair<int,int>> InputHandler::getPoints(std::string expr, int minimum, int maximum)
 {
+    //size = 50;
+    max = maximum;
+    min = minimum;
+
+    step = (max*1.0 -min)/size;
+    if(step < 1)
+        step = 1;
+    cout << step;
+    step = int(round(step));
+		
     Operation *op = mathParser.toPostfix(expr);
     //cout << op->postfix;
     fillValues(op);

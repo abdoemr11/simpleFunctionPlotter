@@ -6,6 +6,8 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QDebug>
+#include <QMessageBox>
+#include <QRegularExpression>
 //QT_CHARTS_USE_NAMESPACE
 #include"inputHandler.h"
 //#include "qcustomplot.h"
@@ -45,8 +47,8 @@ void MainWindow::populatLayout()
   xAxis = new QValueAxis;
   yAxis = new QValueAxis;
   //label
-  QLabel *exprLabel = new QLabel("Enter the function you want to plot");
-  QLabel *minMaxLabel = new QLabel("choose the min and max value");
+  QLabel *exprLabel = new QLabel("Enter F(x)");
+  QLabel *minMaxLabel = new QLabel("Enter min and max value");
   ///////////////////////////////////////////////////
   setCentralWidget(mainWidget);
   mainWidget->setLayout(mainLayout);
@@ -58,13 +60,13 @@ void MainWindow::populatLayout()
   mainLayout->setColumnStretch(0,10);
   mainLayout->setColumnStretch(1,10);
   mainLayout->setColumnStretch(2,50);
-  mainLayout->addWidget(exprLabel,0,0);
+  mainLayout->addWidget(exprLabel,0,0,1,2);
   mainLayout->addWidget(exprLineEdit, 1,0);
-  mainLayout->addWidget(minMaxLabel, 2,0);
+  mainLayout->addWidget(minMaxLabel, 2,0,1,2);
   mainLayout->addWidget(minLineEdit, 3,0);
   mainLayout->addWidget(maxLineEdit, 3,1);
   mainLayout->addWidget(plotButton,4, 1);
-  mainLayout->addWidget(chartView, 0,2,4,1);
+  mainLayout->addWidget(chartView, 0,2,6,1);
 
 
 
@@ -81,14 +83,29 @@ void MainWindow::initChart()
 	series->attachAxis(yAxis);
 	xAxis->setRange(-10,10);
 	yAxis->setRange(-10,10);
+	//xAxis->setTickCount(10);
+	//yAxis->setTickCount(10);
+	
 	chart->setTitle("Simple line chart example");
 	chartView->setChart(chart);
 	//chartView->setRenderHint(QPainter::Antialiasing);
 }
+/**************************************************************
+ *plot(): 
+ *called when pressed plotButton
+ *it use  getPoints from InputHandler class to get value
+ *then pass it to the series
+ *
+ *
+ *************************************************************/
 void MainWindow::plot() 
 {
 	QString exprStr = exprLineEdit->text();
-  std::vector<std::pair<int,int>> points = inputHandler->getPoints(exprStr.toStdString());
+	int min = minLineEdit->text().toInt();
+	int max = maxLineEdit->text().toInt();
+	if(!validateInput(exprStr, min, max))
+		return;
+  std::vector<std::pair<int,int>> points = inputHandler->getPoints(exprStr.toStdString(), min, max);
 	series->clear();
 	QVector<QPointF> pointVec;
 	qDebug() << "std::vector length  "<<points.size();
@@ -98,8 +115,50 @@ void MainWindow::plot()
 		//pointsList->append(qpoint);
 		//series->replace(qpoint);
 		series->append(qpoint);
-	} 
-	qDebug() << series->pointsVector().length();
-	xAxis->setRange(-20,20);
-	yAxis->setRange(-20,20);
+	}
+	foreach(QPointF p, series->pointsVector())
+		qDebug() << p;
+		QPointF minqpoint(points.back().first, points.back().second);
+	qDebug()<< minqpoint << " " << series->pointsVector().length();
+	/*******Set range of axis************/
+	int xrange = ((max + 99)/100) * 100;
+	int yrange = ((points.back().second+99)/100) * 100;
+	xAxis->setRange(-xrange, xrange);
+	yAxis->setRange(-yrange, yrange);
+}
+/**********************************************************************
+ * validateInput: 
+ * - first validate that max > min
+ * - validate that expression is not empty;
+ * -				 expression is valid
+**********************************************************************/
+bool MainWindow::validateInput(QString exprString, int min, int max)
+{
+	if(!(max > min))			
+	{
+		qDebug() << "Maximum value must be greater than minimum value.";
+		QMessageBox msgBox;
+		msgBox.setText("Maximum value must be greater than minimum value.");
+		msgBox.exec();
+		return false;
+	}
+	if(exprString.isEmpty())
+	{
+		qDebug() << "You must Enter a function to plot";
+		QMessageBox msgBox;
+		msgBox.setText("You must Enter a function to plot.");
+		msgBox.exec();
+		return false;
+	}
+	/******************************************************************/
+	QRegularExpression r1("(?:[0-9-+*/^()x])+");
+	if(!r1.match(exprString).hasMatch())
+	{
+		qDebug() << "Can't plot this function Please use numbers,+,-,*,^,/ only"	;
+		QMessageBox msgBox;
+		msgBox.setText("Can't plot this function Please use (x) numbers,+,-,*,^,/ only.");
+		msgBox.exec();
+		return false;
+	}
+	return true;
 }

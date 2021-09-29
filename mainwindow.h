@@ -30,6 +30,7 @@ private:
   void initLayout();
   void populatLayout();
   void initChart();
+	bool validateInput(QString, int, int);
   //input handler
   InputHandler *inputHandler;
    //for chart

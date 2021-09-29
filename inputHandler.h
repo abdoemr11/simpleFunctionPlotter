@@ -8,7 +8,7 @@ public:
     InputHandler(/* args */);
     //~InputHandler();
     void validateExpr(std::string expr);
-    std::vector<std::pair<int,int>> getPoints(std::string);
+    std::vector<std::pair<int,int>> getPoints(std::string, int, int);
     
 private:
     void fillValues(Operation *op);
