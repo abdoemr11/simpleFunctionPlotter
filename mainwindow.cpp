@@ -86,7 +86,7 @@ void MainWindow::initChart()
 	//xAxis->setTickCount(10);
 	//yAxis->setTickCount(10);
 	
-	chart->setTitle("Simple line chart example");
+	chart->setTitle("Function Plotter");
 	chartView->setChart(chart);
 	//chartView->setRenderHint(QPainter::Antialiasing);
 }
