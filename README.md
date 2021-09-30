@@ -1,5 +1,5 @@
 # Simple Function Plotter
-
+Simple function plotter using QT Charts
 ## Features
 
 * Light and simple function plotter
@@ -14,3 +14,6 @@
 ![wrong 1](screenshots/wrong1.png)
 ![wrong 2](screenshots/wrong2.png)
 ![wrong 3](screenshots/wrong3.png)
+
+
+**Thanks** to [xzebra](https://github.com/xzebra/function-plotter) for his math parser library.
